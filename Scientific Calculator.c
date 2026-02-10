@@ -1,159 +1,230 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <time.h>
 
-// Convert degrees to radians for trig functions
-#define DEG_TO_RAD(angle) ((angle) * M_PI / 180.0)
+/* ===== COLORS (ANSI SAFE) ===== */
+#define RESET   "\033[0m"
+#define BLUE    "\033[34m"
+#define GREEN   "\033[32m"
+#define YELLOW  "\033[33m"
+#define RED     "\033[31m"
+#define CYAN    "\033[36m"
 
-// Factorial function
+/* ===== DEGREE TO RADIAN ===== */
+#define DEG_TO_RAD(x) ((x) * M_PI / 180.0)
+
+/* ===== GLOBAL ===== */
+int operationCount = 0;
+
+/* ===== CLEAR SCREEN ===== */
+void clearScreen() {
+    system("cls || clear");
+}
+
+/* ===== FACTORIAL ===== */
 long long factorial(int n) {
-    if (n < 0) return -1;
-    if (n == 0 || n == 1) return 1;
-    long long result = 1;
-    for (int i = 2; i <= n; ++i) result *= i;
-    return result;
+    long long f = 1;
+    for (int i = 1; i <= n; i++)
+        f *= i;
+    return f;
 }
 
+/* ===== HEADER ===== */
+void showHeader() {
+    time_t t = time(NULL);
+    struct tm *tm = localtime(&t);
+
+    printf(CYAN);
+    printf("\n==============================================\n");
+    printf("        SCIENTIFIC CALCULATOR SYSTEM\n");
+    printf("        Course: CSE103 | Language: C\n");
+    printf("        Date: %02d-%02d-%d   Time: %02d:%02d\n",
+           tm->tm_mday, tm->tm_mon + 1,
+           tm->tm_year + 1900, tm->tm_hour, tm->tm_min);
+    printf("==============================================\n");
+    printf(RESET);
+}
+
+/* ===== MENU ===== */
 void showMenu() {
-    printf("\n==== Scientific Calculator ====\n");
-    printf("1. Addition (+)\n");
-    printf("2. Subtraction (-)\n");
-    printf("3. Multiplication (*)\n");
-    printf("4. Division (/)\n");
-    printf("5. Modulus (%%)\n");
-    printf("6. Power (x^y)\n");
-    printf("7. Square Root (√x)\n");
-    printf("8. Sine (sin x)\n");
-    printf("9. Cosine (cos x)\n");
-    printf("10. Tangent (tan x)\n");
-    printf("11. Logarithm base 10 (log x)\n");
-    printf("12. Natural Logarithm (ln x)\n");
-    printf("13. Exponential (e^x)\n");
-    printf("14. Factorial (x!)\n");
-    printf("0. Exit\n");
-    printf("Choose an operation: ");
+    printf(YELLOW "\n------------- OPERATIONS MENU -------------\n" RESET);
+    printf(" 1. Addition (multiple numbers)\n");
+    printf(" 2. Subtraction (two numbers)\n");
+    printf(" 3. Multiplication (multiple numbers)\n");
+    printf(" 4. Division (two numbers)\n");
+    printf(" 5. Power (x^y)\n");
+    printf(" 6. Square Root\n");
+    printf(" 7. Sine\n");
+    printf(" 8. Cosine\n");
+    printf(" 9. Tangent\n");
+    printf("10. Log base 10\n");
+    printf("11. Natural Log\n");
+    printf("12. Exponential (e^x)\n");
+    printf("13. Factorial\n");
+    printf(" 0. Exit\n");
+    printf("-------------------------------------------\n");
+    printf("Enter your choice: ");
 }
 
+/* ===== RESULT BOX ===== */
+void showResultBox() {
+    operationCount++;
+    printf(GREEN "\n-------------------------------------------\n");
+    printf(" Calculation completed successfully\n");
+    printf(" Operations performed this session: %d\n", operationCount);
+    printf("-------------------------------------------\n" RESET);
+}
+
+/* ===== MAIN ===== */
 int main() {
-    int choice;
-    double num1, num2;
+    int choice, count, n;
+    double num, result, x, y;
 
     while (1) {
+        clearScreen();
+        showHeader();
         showMenu();
         scanf("%d", &choice);
 
         switch (choice) {
+
+            /* ===== ADDITION (MULTIPLE NUMBERS) ===== */
             case 1:
-                printf("Enter two numbers: ");
-                scanf("%lf %lf", &num1, &num2);
-                printf("Result = %.4lf\n", num1 + num2);
+                printf("How many numbers do you want to add? ");
+                scanf("%d", &count);
+
+                result = 0;
+                for (int i = 1; i <= count; i++) {
+                    printf("Enter number %d: ", i);
+                    scanf("%lf", &num);
+                    result += num;
+                }
+                printf(GREEN "Sum = %.4lf\n" RESET, result);
                 break;
 
+            /* ===== SUBTRACTION ===== */
             case 2:
-                printf("Enter two numbers: ");
-                scanf("%lf %lf", &num1, &num2);
-                printf("Result = %.4lf\n", num1 - num2);
+                printf("Enter first number: ");
+                scanf("%lf", &x);
+                printf("Enter second number: ");
+                scanf("%lf", &y);
+                printf(GREEN "Result = %.4lf\n" RESET, x - y);
                 break;
 
+            /* ===== MULTIPLICATION (MULTIPLE NUMBERS) ===== */
             case 3:
-                printf("Enter two numbers: ");
-                scanf("%lf %lf", &num1, &num2);
-                printf("Result = %.4lf\n", num1 * num2);
+                printf("How many numbers do you want to multiply? ");
+                scanf("%d", &count);
+
+                result = 1;
+                for (int i = 1; i <= count; i++) {
+                    printf("Enter number %d: ", i);
+                    scanf("%lf", &num);
+                    result *= num;
+                }
+                printf(GREEN "Product = %.4lf\n" RESET, result);
                 break;
 
+            /* ===== DIVISION ===== */
             case 4:
-                printf("Enter dividend and divisor: ");
-                scanf("%lf %lf", &num1, &num2);
-                if (num2 == 0)
-                    printf("Error: Division by zero!\n");
+                printf("Enter dividend: ");
+                scanf("%lf", &x);
+                printf("Enter divisor: ");
+                scanf("%lf", &y);
+
+                if (y == 0)
+                    printf(RED "Error: Division by zero\n" RESET);
                 else
-                    printf("Result = %.4lf\n", num1 / num2);
+                    printf(GREEN "Result = %.4lf\n" RESET, x / y);
                 break;
 
+            /* ===== POWER ===== */
             case 5:
-                printf("Enter two integers: ");
-                int a, b;
-                scanf("%d %d", &a, &b);
-                if (b == 0)
-                    printf("Error: Modulo by zero!\n");
-                else
-                    printf("Result = %d\n", a % b);
+                printf("Enter base: ");
+                scanf("%lf", &x);
+                printf("Enter exponent: ");
+                scanf("%lf", &y);
+                printf(GREEN "Result = %.4lf\n" RESET, pow(x, y));
                 break;
 
+            /* ===== SQUARE ROOT ===== */
             case 6:
-                printf("Enter base and exponent: ");
-                scanf("%lf %lf", &num1, &num2);
-                printf("Result = %.4lf\n", pow(num1, num2));
+                printf("Enter number: ");
+                scanf("%lf", &x);
+                if (x < 0)
+                    printf(RED "Error: Negative input\n" RESET);
+                else
+                    printf(GREEN "Result = %.4lf\n" RESET, sqrt(x));
                 break;
 
+            /* ===== TRIGONOMETRIC ===== */
             case 7:
-                printf("Enter a number: ");
-                scanf("%lf", &num1);
-                if (num1 < 0)
-                    printf("Error: Negative number for square root!\n");
-                else
-                    printf("Result = %.4lf\n", sqrt(num1));
+                printf("Enter angle in degrees: ");
+                scanf("%lf", &x);
+                printf(GREEN "Result = %.4lf\n" RESET, sin(DEG_TO_RAD(x)));
                 break;
 
             case 8:
                 printf("Enter angle in degrees: ");
-                scanf("%lf", &num1);
-                printf("sin(%.2lf) = %.4lf\n", num1, sin(DEG_TO_RAD(num1)));
+                scanf("%lf", &x);
+                printf(GREEN "Result = %.4lf\n" RESET, cos(DEG_TO_RAD(x)));
                 break;
 
             case 9:
                 printf("Enter angle in degrees: ");
-                scanf("%lf", &num1);
-                printf("cos(%.2lf) = %.4lf\n", num1, cos(DEG_TO_RAD(num1)));
+                scanf("%lf", &x);
+                printf(GREEN "Result = %.4lf\n" RESET, tan(DEG_TO_RAD(x)));
                 break;
 
+            /* ===== LOG ===== */
             case 10:
-                printf("Enter angle in degrees: ");
-                scanf("%lf", &num1);
-                printf("tan(%.2lf) = %.4lf\n", num1, tan(DEG_TO_RAD(num1)));
+                printf("Enter number: ");
+                scanf("%lf", &x);
+                if (x <= 0)
+                    printf(RED "Error: Invalid input\n" RESET);
+                else
+                    printf(GREEN "Result = %.4lf\n" RESET, log10(x));
                 break;
 
             case 11:
-                printf("Enter a number: ");
-                scanf("%lf", &num1);
-                if (num1 <= 0)
-                    printf("Error: Logarithm undefined for <= 0\n");
+                printf("Enter number: ");
+                scanf("%lf", &x);
+                if (x <= 0)
+                    printf(RED "Error: Invalid input\n" RESET);
                 else
-                    printf("log10(%.2lf) = %.4lf\n", num1, log10(num1));
+                    printf(GREEN "Result = %.4lf\n" RESET, log(x));
                 break;
 
+            /* ===== EXPONENTIAL ===== */
             case 12:
-                printf("Enter a number: ");
-                scanf("%lf", &num1);
-                if (num1 <= 0)
-                    printf("Error: Natural log undefined for <= 0\n");
-                else
-                    printf("ln(%.2lf) = %.4lf\n", num1, log(num1));
-                break;
-
-            case 13:
                 printf("Enter exponent: ");
-                scanf("%lf", &num1);
-                printf("e^%.2lf = %.4lf\n", num1, exp(num1));
+                scanf("%lf", &x);
+                printf(GREEN "Result = %.4lf\n" RESET, exp(x));
                 break;
 
-            case 14:
+            /* ===== FACTORIAL ===== */
+            case 13:
                 printf("Enter a non-negative integer: ");
-                int n;
                 scanf("%d", &n);
                 if (n < 0)
-                    printf("Error: Factorial of negative number undefined!\n");
+                    printf(RED "Error: Invalid input\n" RESET);
                 else
-                    printf("%d! = %lld\n", n, factorial(n));
+                    printf(GREEN "Result = %lld\n" RESET, factorial(n));
                 break;
 
             case 0:
-                printf("Exiting calculator. Goodbye!\n");
+                printf(CYAN "\nThank you for using the Scientific Calculator\n" RESET);
                 exit(0);
 
             default:
-                printf("Invalid choice! Please try again.\n");
+                printf(RED "Invalid choice. Try again.\n" RESET);
         }
+
+        showResultBox();
+        printf(YELLOW "\nPress Enter to continue..." RESET);
+        getchar();
+        getchar();
     }
 
     return 0;
